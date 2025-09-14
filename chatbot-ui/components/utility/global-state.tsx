@@ -99,11 +99,8 @@ export const GlobalState: FC<GlobalStateProps> = ({ children }) => {
   const [slashCommand, setSlashCommand] = useState("")
   const [isFilePickerOpen, setIsFilePickerOpen] = useState(false)
   const [hashtagCommand, setHashtagCommand] = useState("")
-  const [isToolPickerOpen, setIsToolPickerOpen] = useState(false)
-  const [toolCommand, setToolCommand] = useState("")
   const [focusPrompt, setFocusPrompt] = useState(false)
   const [focusFile, setFocusFile] = useState(false)
-  const [focusTool, setFocusTool] = useState(false)
   const [focusAssistant, setFocusAssistant] = useState(false)
   const [atCommand, setAtCommand] = useState("")
   const [isAssistantPickerOpen, setIsAssistantPickerOpen] = useState(false)
@@ -283,16 +280,10 @@ export const GlobalState: FC<GlobalStateProps> = ({ children }) => {
         setIsFilePickerOpen,
         hashtagCommand,
         setHashtagCommand,
-        isToolPickerOpen,
-        setIsToolPickerOpen,
-        toolCommand,
-        setToolCommand,
         focusPrompt,
         setFocusPrompt,
         focusFile,
         setFocusFile,
-        focusTool,
-        setFocusTool,
         focusAssistant,
         setFocusAssistant,
         atCommand,
