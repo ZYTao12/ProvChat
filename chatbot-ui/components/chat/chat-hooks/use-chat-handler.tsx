@@ -65,17 +65,16 @@ export const useChatHandler = () => {
     setChatSettings,
     models,
     isPromptPickerOpen,
-    isFilePickerOpen,
-    isToolPickerOpen
+    isFilePickerOpen
   } = useContext(ChatbotUIContext)
 
   const chatInputRef = useRef<HTMLTextAreaElement>(null)
 
   useEffect(() => {
-    if (!isPromptPickerOpen || !isFilePickerOpen || !isToolPickerOpen) {
+    if (!isPromptPickerOpen || !isFilePickerOpen) {
       chatInputRef.current?.focus()
     }
-  }, [isPromptPickerOpen, isFilePickerOpen, isToolPickerOpen])
+  }, [isPromptPickerOpen, isFilePickerOpen])
 
   const handleNewChat = async () => {
     if (!selectedWorkspace) return
