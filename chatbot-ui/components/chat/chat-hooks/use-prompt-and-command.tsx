@@ -1,7 +1,6 @@
 import { ChatbotUIContext } from "@/context/context"
 import { getAssistantCollectionsByAssistantId } from "@/db/assistant-collections"
 import { getAssistantFilesByAssistantId } from "@/db/assistant-files"
-import { getAssistantToolsByAssistantId } from "@/db/assistant-tools"
 import { getCollectionFilesByCollectionId } from "@/db/collection-files"
 import { Tables } from "@/supabase/types"
 import { LLMID } from "@/types"
@@ -19,9 +18,6 @@ export const usePromptAndCommand = () => {
     setSlashCommand,
     setHashtagCommand,
     setUseRetrieval,
-    setToolCommand,
-    setIsToolPickerOpen,
-    setSelectedTools,
     setAtCommand,
     setIsAssistantPickerOpen,
     setSelectedAssistant,
@@ -33,11 +29,9 @@ export const usePromptAndCommand = () => {
     const atTextRegex = /@([^ ]*)$/
     const slashTextRegex = /\/([^ ]*)$/
     const hashtagTextRegex = /#([^ ]*)$/
-    const toolTextRegex = /!([^ ]*)$/
     const atMatch = value.match(atTextRegex)
     const slashMatch = value.match(slashTextRegex)
     const hashtagMatch = value.match(hashtagTextRegex)
-    const toolMatch = value.match(toolTextRegex)
 
     if (atMatch) {
       setIsAssistantPickerOpen(true)
@@ -48,17 +42,12 @@ export const usePromptAndCommand = () => {
     } else if (hashtagMatch) {
       setIsFilePickerOpen(true)
       setHashtagCommand(hashtagMatch[1])
-    } else if (toolMatch) {
-      setIsToolPickerOpen(true)
-      setToolCommand(toolMatch[1])
     } else {
       setIsPromptPickerOpen(false)
       setIsFilePickerOpen(false)
-      setIsToolPickerOpen(false)
       setIsAssistantPickerOpen(false)
       setSlashCommand("")
       setHashtagCommand("")
-      setToolCommand("")
       setAtCommand("")
     }
 
@@ -128,12 +117,6 @@ export const usePromptAndCommand = () => {
     setUserInput(userInput.replace(/#[^ ]*$/, ""))
   }
 
-  const handleSelectTool = (tool: Tables<"tools">) => {
-    setIsToolPickerOpen(false)
-    setUserInput(userInput.replace(/![^ ]*$/, ""))
-    setSelectedTools(prev => [...prev, tool])
-  }
-
   const handleSelectAssistant = async (assistant: Tables<"assistants">) => {
     setIsAssistantPickerOpen(false)
     setUserInput(userInput.replace(/@[^ ]*$/, ""))
@@ -163,10 +146,7 @@ export const usePromptAndCommand = () => {
       ).files
       allFiles = [...allFiles, ...collectionFiles]
     }
-    const assistantTools = (await getAssistantToolsByAssistantId(assistant.id))
-      .tools
 
-    setSelectedTools(assistantTools)
     setChatFiles(
       allFiles.map(file => ({
         id: file.id,
@@ -184,7 +164,6 @@ export const usePromptAndCommand = () => {
     handleSelectPrompt,
     handleSelectUserFile,
     handleSelectUserCollection,
-    handleSelectTool,
     handleSelectAssistant
   }
 }

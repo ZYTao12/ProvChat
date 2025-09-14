@@ -19,6 +19,7 @@ import {
 import { Slider } from "./slider"
 import { TextareaAutosize } from "./textarea-autosize"
 import { WithTooltip } from "./with-tooltip"
+import { Button } from "./button"
 
 interface ChatSettingsFormProps {
   chatSettings: ChatSettings
@@ -37,6 +38,15 @@ export const ChatSettingsForm: FC<ChatSettingsFormProps> = ({
 
   if (!profile) return null
 
+  const quickModels = [
+    { id: "gpt-5-2025-08-07", label: "GPT-5" },
+    { id: "gpt-5-mini-2025-08-07", label: "GPT-5 Mini" },
+    { id: "gpt-5-nano-2025-08-07", label: "GPT-5 Nano" },
+    { id: "gpt-4.1-2025-04-14", label: "GPT-4.1" },
+    { id: "gpt-5-chat-latest", label: "GPT-5 Chat" },
+    { id: "chatgpt-4o-latest", label: "ChatGPT 4o" }
+  ]
+
   return (
     <div className="space-y-3">
       <div className="space-y-1">
@@ -48,6 +58,19 @@ export const ChatSettingsForm: FC<ChatSettingsFormProps> = ({
             onChangeChatSettings({ ...chatSettings, model })
           }}
         />
+
+        <div className="flex flex-wrap gap-2 pt-2">
+          {quickModels.map(m => (
+            <Button
+              key={m.id}
+              variant={chatSettings.model === (m.id as any) ? "default" : "outline"}
+              size="sm"
+              onClick={() => onChangeChatSettings({ ...chatSettings, model: m.id as any })}
+            >
+              {m.label}
+            </Button>
+          ))}
+        </div>
       </div>
 
       <div className="space-y-1">
@@ -238,9 +261,7 @@ const AdvancedContent: FC<AdvancedContentProps> = ({
           </SelectTrigger>
 
           <SelectContent>
-            <SelectItem value="openai">
-              {profile?.use_azure_openai ? "Azure OpenAI" : "OpenAI"}
-            </SelectItem>
+            <SelectItem value="openai">OpenAI</SelectItem>
 
             {window.location.hostname === "localhost" && (
               <SelectItem value="local">Local</SelectItem>

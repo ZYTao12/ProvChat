@@ -2,7 +2,6 @@ import { openapiToFunctions } from "@/lib/openapi-conversion"
 import { checkApiKey, getServerProfile } from "@/lib/server/server-chat-helpers"
 import { Tables } from "@/supabase/types"
 import { ChatSettings } from "@/types"
-import { OpenAIStream, StreamingTextResponse } from "ai"
 import OpenAI from "openai"
 import { ChatCompletionCreateParamsBase } from "openai/resources/chat/completions.mjs"
 
@@ -70,7 +69,8 @@ export async function POST(request: Request) {
     const toolCalls = message.tool_calls || []
 
     if (toolCalls.length === 0) {
-      return new Response(message.content, {
+      // Directly return the model content, expecting JSON
+      return new Response(message.content || "{}", {
         headers: {
           "Content-Type": "application/json"
         }
@@ -201,12 +201,16 @@ export async function POST(request: Request) {
     const secondResponse = await openai.chat.completions.create({
       model: chatSettings.model as ChatCompletionCreateParamsBase["model"],
       messages,
-      stream: true
+      response_format: { type: "json_object" }
     })
 
-    const stream = OpenAIStream(secondResponse)
+    const finalContent = secondResponse.choices[0].message.content || "{}"
 
-    return new StreamingTextResponse(stream)
+    return new Response(finalContent, {
+      headers: {
+        "Content-Type": "application/json"
+      }
+    })
   } catch (error: any) {
     console.error(error)
     const errorMessage = error.error?.message || "An unexpected error occurred"

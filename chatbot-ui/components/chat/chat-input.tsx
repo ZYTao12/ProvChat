@@ -44,9 +44,7 @@ export const ChatInput: FC<ChatInputProps> = ({}) => {
     focusPrompt,
     setFocusPrompt,
     focusFile,
-    focusTool,
-    setFocusTool,
-    isToolPickerOpen,
+
     isPromptPickerOpen,
     setIsPromptPickerOpen,
     isFilePickerOpen,
@@ -92,7 +90,6 @@ export const ChatInput: FC<ChatInputProps> = ({}) => {
     if (
       isPromptPickerOpen ||
       isFilePickerOpen ||
-      isToolPickerOpen ||
       isAssistantPickerOpen
     ) {
       if (
@@ -104,7 +101,6 @@ export const ChatInput: FC<ChatInputProps> = ({}) => {
         // Toggle focus based on picker type
         if (isPromptPickerOpen) setFocusPrompt(!focusPrompt)
         if (isFilePickerOpen) setFocusFile(!focusFile)
-        if (isToolPickerOpen) setFocusTool(!focusTool)
         if (isAssistantPickerOpen) setFocusAssistant(!focusAssistant)
       }
     }
@@ -167,27 +163,6 @@ export const ChatInput: FC<ChatInputProps> = ({}) => {
       <div className="flex flex-col flex-wrap justify-center gap-2">
         <ChatFilesDisplay />
 
-        {selectedTools &&
-          selectedTools.map((tool, index) => (
-            <div
-              key={index}
-              className="flex justify-center"
-              onClick={() =>
-                setSelectedTools(
-                  selectedTools.filter(
-                    selectedTool => selectedTool.id !== tool.id
-                  )
-                )
-              }
-            >
-              <div className="flex cursor-pointer items-center justify-center space-x-1 rounded-lg bg-purple-600 px-3 py-1 hover:opacity-50">
-                <IconBolt size={20} />
-
-                <div>{tool.name}</div>
-              </div>
-            </div>
-          ))}
-
         {selectedAssistant && (
           <div className="border-primary mx-auto flex w-fit items-center space-x-2 rounded-lg border p-1.5">
             {selectedAssistant.image_path && (
@@ -240,8 +215,7 @@ export const ChatInput: FC<ChatInputProps> = ({}) => {
           textareaRef={chatInputRef}
           className="ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring text-md flex w-full resize-none rounded-md border-none bg-transparent px-14 py-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
           placeholder={t(
-            // `Ask anything. Type "@" for assistants, "/" for prompts, "#" for files, and "!" for tools.`
-            `Ask anything. Type @  /  #  !`
+            `Ask anything. Type @  /  #`
           )}
           onValueChange={handleInputChange}
           value={userInput}

@@ -29,6 +29,7 @@ export async function POST(request: Request) {
       messages: messages as ChatCompletionCreateParamsBase["messages"],
       temperature: chatSettings.temperature,
       max_tokens: undefined,
+      response_format: { type: "json_object" },
       stream: true
     })
 

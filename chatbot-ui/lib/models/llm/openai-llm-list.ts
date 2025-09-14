@@ -81,7 +81,70 @@ const GPT3_5Turbo: LLM = {
   }
 }
 
+// NEWER OPENAI MODELS (ADDED)
+const GPT5ChatLatest: LLM = {
+  modelId: "gpt-5-chat-latest",
+  modelName: "GPT-5 Chat (Latest)",
+  provider: "openai",
+  hostedId: "gpt-5-chat-latest",
+  platformLink: OPENAI_PLATORM_LINK,
+  imageInput: true
+}
+
+const ChatGPT4oLatest: LLM = {
+  modelId: "chatgpt-4o-latest",
+  modelName: "ChatGPT 4o (Latest)",
+  provider: "openai",
+  hostedId: "chatgpt-4o-latest",
+  platformLink: OPENAI_PLATORM_LINK,
+  imageInput: true
+}
+
+const GPT5_2025_08_07: LLM = {
+  modelId: "gpt-5-2025-08-07",
+  modelName: "GPT-5 (2025-08-07)",
+  provider: "openai",
+  hostedId: "gpt-5-2025-08-07",
+  platformLink: OPENAI_PLATORM_LINK,
+  imageInput: false
+}
+
+const GPT5Mini_2025_08_07: LLM = {
+  modelId: "gpt-5-mini-2025-08-07",
+  modelName: "GPT-5 Mini (2025-08-07)",
+  provider: "openai",
+  hostedId: "gpt-5-mini-2025-08-07",
+  platformLink: OPENAI_PLATORM_LINK,
+  imageInput: false
+}
+
+const GPT5Nano_2025_08_07: LLM = {
+  modelId: "gpt-5-nano-2025-08-07",
+  modelName: "GPT-5 Nano (2025-08-07)",
+  provider: "openai",
+  hostedId: "gpt-5-nano-2025-08-07",
+  platformLink: OPENAI_PLATORM_LINK,
+  imageInput: false
+}
+
+const GPT41_2025_04_14: LLM = {
+  modelId: "gpt-4.1-2025-04-14",
+  modelName: "GPT-4.1 (2025-04-14)",
+  provider: "openai",
+  hostedId: "gpt-4.1-2025-04-14",
+  platformLink: OPENAI_PLATORM_LINK,
+  imageInput: false
+}
+
 export const OPENAI_LLM_LIST: LLM[] = [
+  // Latest featured first
+  GPT5ChatLatest,
+  ChatGPT4oLatest,
+  GPT5_2025_08_07,
+  GPT5Mini_2025_08_07,
+  GPT5Nano_2025_08_07,
+  GPT41_2025_04_14,
+  // Existing
   GPT4o,
   GPT4Turbo,
   GPT4Vision,

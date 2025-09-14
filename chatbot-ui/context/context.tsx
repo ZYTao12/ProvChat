@@ -96,16 +96,10 @@ interface ChatbotUIContext {
   setIsFilePickerOpen: Dispatch<SetStateAction<boolean>>
   hashtagCommand: string
   setHashtagCommand: Dispatch<SetStateAction<string>>
-  isToolPickerOpen: boolean
-  setIsToolPickerOpen: Dispatch<SetStateAction<boolean>>
-  toolCommand: string
-  setToolCommand: Dispatch<SetStateAction<string>>
   focusPrompt: boolean
   setFocusPrompt: Dispatch<SetStateAction<boolean>>
   focusFile: boolean
   setFocusFile: Dispatch<SetStateAction<boolean>>
-  focusTool: boolean
-  setFocusTool: Dispatch<SetStateAction<boolean>>
   focusAssistant: boolean
   setFocusAssistant: Dispatch<SetStateAction<boolean>>
   atCommand: string
@@ -222,16 +216,10 @@ export const ChatbotUIContext = createContext<ChatbotUIContext>({
   setIsFilePickerOpen: () => {},
   hashtagCommand: "",
   setHashtagCommand: () => {},
-  isToolPickerOpen: false,
-  setIsToolPickerOpen: () => {},
-  toolCommand: "",
-  setToolCommand: () => {},
   focusPrompt: false,
   setFocusPrompt: () => {},
   focusFile: false,
   setFocusFile: () => {},
-  focusTool: false,
-  setFocusTool: () => {},
   focusAssistant: false,
   setFocusAssistant: () => {},
   atCommand: "",

@@ -179,6 +179,47 @@ export const Message: FC<MessageProps> = ({
     return acc
   }, fileAccumulator)
 
+  // Try to render structured JSON output (LabeledSentences) if present
+  const renderStructuredOrMarkdown = () => {
+    try {
+      const data = JSON.parse(message.content)
+      const isValid =
+        data &&
+        typeof data === "object" &&
+        typeof data.message_id === "string" &&
+        Array.isArray(data.sentences)
+
+      if (!isValid) {
+        return <MessageMarkdown content={message.content} />
+      }
+
+      return (
+        <div className="space-y-2">
+          {data.sentences.map((s: any) => {
+            const text = typeof s.message_text === "string" ? s.message_text : ""
+            const type = s.message_type
+
+            const tag =
+              type === "memory" ? (
+                <span className="ml-2 inline-block rounded bg-gray-800 px-1.5 py-0.5 text-xs font-semibold text-gray-100">M</span>
+              ) : type === "inference" ? (
+                <span className="ml-2 inline-block rounded bg-gray-300 px-1.5 py-0.5 text-xs font-semibold text-gray-800">I</span>
+              ) : null
+
+            return (
+              <p key={s.sentence_id} className="mb-2 last:mb-0">
+                {text}
+                {tag}
+              </p>
+            )
+          })}
+        </div>
+      )
+    } catch (e) {
+      return <MessageMarkdown content={message.content} />
+    }
+  }
+
   return (
     <div
       className={cn(
@@ -305,7 +346,7 @@ export const Message: FC<MessageProps> = ({
               maxRows={20}
             />
           ) : (
-            <MessageMarkdown content={message.content} />
+            renderStructuredOrMarkdown()
           )}
         </div>
 
