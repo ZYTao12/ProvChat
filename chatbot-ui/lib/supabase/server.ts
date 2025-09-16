@@ -12,7 +12,15 @@ export const createClient = (cookieStore: ReturnType<typeof cookies>) => {
         },
         set(name: string, value: string, options: CookieOptions) {
           try {
-            cookieStore.set({ name, value, ...options })
+            cookieStore.set({
+              name,
+              value,
+              httpOnly: true,
+              secure: true,
+              sameSite: "lax",
+              path: "/",
+              ...options
+            })
           } catch (error) {
             // The `set` method was called from a Server Component.
             // This can be ignored if you have middleware refreshing
@@ -21,7 +29,16 @@ export const createClient = (cookieStore: ReturnType<typeof cookies>) => {
         },
         remove(name: string, options: CookieOptions) {
           try {
-            cookieStore.set({ name, value: "", ...options })
+            cookieStore.set({
+              name,
+              value: "",
+              httpOnly: true,
+              secure: true,
+              sameSite: "lax",
+              path: "/",
+              maxAge: 0,
+              ...options
+            })
           } catch (error) {
             // The `delete` method was called from a Server Component.
             // This can be ignored if you have middleware refreshing

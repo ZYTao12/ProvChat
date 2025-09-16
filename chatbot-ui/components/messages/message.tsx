@@ -201,7 +201,7 @@ export const Message: FC<MessageProps> = ({
 
             const tag =
               type === "memory" ? (
-                <span className="ml-2 inline-block rounded bg-gray-800 px-1.5 py-0.5 text-xs font-semibold text-gray-100">M</span>
+                <span className="ml-2 inline-block rounded bg-gray-600 px-1.5 py-0.5 text-xs font-semibold text-gray-100">M</span>
               ) : type === "inference" ? (
                 <span className="ml-2 inline-block rounded bg-gray-300 px-1.5 py-0.5 text-xs font-semibold text-gray-800">I</span>
               ) : null
