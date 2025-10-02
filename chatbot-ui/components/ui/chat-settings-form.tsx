@@ -40,8 +40,8 @@ export const ChatSettingsForm: FC<ChatSettingsFormProps> = ({
 
   const quickModels = [
     { id: "gpt-5-2025-08-07", label: "GPT-5" },
-    { id: "gpt-5-mini-2025-08-07", label: "GPT-5 Mini" },
-    { id: "gpt-5-nano-2025-08-07", label: "GPT-5 Nano" },
+    { id: "gpt-5-2025-08-07", label: "GPT-5 Mini" },
+    { id: "gpt-5-2025-08-07", label: "GPT-5 Nano" },
     { id: "gpt-4.1-2025-04-14", label: "GPT-4.1" },
     { id: "gpt-5-chat-latest", label: "GPT-5 Chat" },
     { id: "chatgpt-4o-latest", label: "ChatGPT 4o" }

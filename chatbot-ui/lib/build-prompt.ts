@@ -49,7 +49,15 @@ const buildBasePrompt = (
   fullPrompt += `Labeling Rules:\n- Set \"message_type\" to \"memory\" if supported by memory_context; \"inference\" if about the user but not supported; \"na\" if not about the user.\n- Use null only for meta-output such as clarifying questions about missing memory or statements like \"I don't have enough information.\"\n- If a sentence mixes memory and inference, prefer splitting; otherwise label it \"inference\".\n- Bullets & lists: treat each bullet/numbered line as its own sentence; omit the bullet marker.\n- Quotes: if a sentence quotes prior content verbatim from memory_context, label it \"memory\".\n- Determinism: be conservative—only mark \"memory\" when clearly supported.\n`
   fullPrompt += `Strict Output Requirements:\n- Produce only a single valid JSON object. No prose, no markdown fences, no extra text.\n- Use double quotes for all keys and string values.\n- No trailing commas.\n- \"message_id\" must be a UUIDv4 string.\n- \"sentence_id\" starts at 0 and increments by 1 without gaps.\n`
   fullPrompt += `JSON Schema (conceptual): { \"message_id\": \"<UUIDv4>\", \"sentences\": [ { \"sentence_id\": 0, \"message_type\": \"memory\" | \"inference\" | \"na\" | null, \"message_text\": \"<string>\" } ] }\n`
-  fullPrompt += `Return only the JSON object—nothing else.\n`
+  fullPrompt += `\n\nEXAMPLES:\n`
+  fullPrompt += `memory_context (prior):\nUser: \"I bike to class most days.\"\n`
+  fullPrompt += `user_message (latest):\n\"Any podcast suggestions?\"\n`
+  fullPrompt += `{\n  \"message_id\": \"d1f1a780-2e29-4b5c-9e3d-1c891a2e4c0a\",\n  \"sentences\": [\n    { \"sentence_id\": 0, \"message_type\": \"memory\", \"message_text\": \"You bike to class most days.\" },\n    { \"sentence_id\": 1, \"message_type\": \"inference\", \"message_text\": \"Since you commute by bike, you might prefer short 20–30 minute podcast episodes.\" },\n    { \"sentence_id\": 2, \"message_type\": \"na\", \"message_text\": \"A science storytelling series or language learning podcast could fit nicely.\" },\n    { \"sentence_id\": 3, \"message_type\": \"null\", \"message_text\": \"Do you usually listen while biking, or more at home?\" }\n  ]\n}\n`
+  fullPrompt += `\n`
+  fullPrompt += `memory_context (prior):\nUser: \"I watch K-dramas every weekend.\"\n`
+  fullPrompt += `user_message (latest):\n\"I’m not actually into romance though.\"\n`
+  fullPrompt += `{\n  \"message_id\": \"a67d4191-01b5-4df7-82f4-9b682c589113\",\n  \"sentences\": [\n    { \"sentence_id\": 0, \"message_type\": \"na\", \"message_text\": \"Thanks for correcting me—sorry for assuming romance was your main interest.\" },\n    { \"sentence_id\": 1, \"message_type\": \"memory\", \"message_text\": \"You watch K-dramas every weekend.\" },\n    { \"sentence_id\": 2, \"message_type\": \"inference\", \"message_text\": \"You may be more into thrillers or mystery genres within K-dramas.\" },\n    { \"sentence_id\": 3, \"message_type\": \"null\", \"message_text\": \"Do you want me to suggest suspense-driven shows?\" }\n  ]\n}\n`
+  fullPrompt += `\nReturn only the JSON object—nothing else.\n`
 
   return fullPrompt
 }

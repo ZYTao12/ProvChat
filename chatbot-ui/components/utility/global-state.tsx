@@ -7,11 +7,6 @@ import { getProfileByUserId } from "@/db/profile"
 import { getWorkspaceImageFromStorage } from "@/db/storage/workspace-images"
 import { getWorkspacesByUserId } from "@/db/workspaces"
 import { convertBlobToBase64 } from "@/lib/blob-to-b64"
-import {
-  fetchHostedModels,
-  fetchOllamaModels,
-  fetchOpenRouterModels
-} from "@/lib/models/fetch-models"
 import { supabase } from "@/lib/supabase/browser-client"
 import { Tables } from "@/supabase/types"
 import {
@@ -38,7 +33,7 @@ export const GlobalState: FC<GlobalStateProps> = ({ children }) => {
   // PROFILE STORE
   const [profile, setProfile] = useState<Tables<"profiles"> | null>(null)
 
-  // ITEMS STORE
+  // ITEMS STORE (kept but unused in minimal UI)
   const [assistants, setAssistants] = useState<Tables<"assistants">[]>([])
   const [collections, setCollections] = useState<Tables<"collections">[]>([])
   const [chats, setChats] = useState<Tables<"chats">[]>([])
@@ -50,7 +45,7 @@ export const GlobalState: FC<GlobalStateProps> = ({ children }) => {
   const [tools, setTools] = useState<Tables<"tools">[]>([])
   const [workspaces, setWorkspaces] = useState<Tables<"workspaces">[]>([])
 
-  // MODELS STORE
+  // MODELS STORE (present but not used in minimal UI)
   const [envKeyMap, setEnvKeyMap] = useState<Record<string, VALID_ENV_KEYS>>({})
   const [availableHostedModels, setAvailableHostedModels] = useState<LLM[]>([])
   const [availableLocalModels, setAvailableLocalModels] = useState<LLM[]>([])
@@ -77,9 +72,9 @@ export const GlobalState: FC<GlobalStateProps> = ({ children }) => {
   const [userInput, setUserInput] = useState<string>("")
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([])
   const [chatSettings, setChatSettings] = useState<ChatSettings>({
-    model: "gpt-4-turbo-preview",
-    prompt: "You are a helpful AI assistant.",
-    temperature: 0.5,
+    model: "gpt-5-2025-08-07",
+    prompt: "You are not an AI. You are a helpful assistant. Today is {{date}}. Use the provided conversation behavior and structured-output instructions.",
+    temperature: 1,
     contextLength: 4000,
     includeProfileContext: true,
     includeWorkspaceInstructions: true,
@@ -94,7 +89,7 @@ export const GlobalState: FC<GlobalStateProps> = ({ children }) => {
   const [abortController, setAbortController] =
     useState<AbortController | null>(null)
 
-  // CHAT INPUT COMMAND STORE
+  // CHAT INPUT COMMAND STORE (unused in minimal UI)
   const [isPromptPickerOpen, setIsPromptPickerOpen] = useState(false)
   const [slashCommand, setSlashCommand] = useState("")
   const [isFilePickerOpen, setIsFilePickerOpen] = useState(false)
@@ -105,47 +100,26 @@ export const GlobalState: FC<GlobalStateProps> = ({ children }) => {
   const [atCommand, setAtCommand] = useState("")
   const [isAssistantPickerOpen, setIsAssistantPickerOpen] = useState(false)
 
-  // ATTACHMENTS STORE
+  // ATTACHMENTS STORE (unused in minimal UI)
   const [chatFiles, setChatFiles] = useState<ChatFile[]>([])
   const [chatImages, setChatImages] = useState<MessageImage[]>([])
   const [newMessageFiles, setNewMessageFiles] = useState<ChatFile[]>([])
   const [newMessageImages, setNewMessageImages] = useState<MessageImage[]>([])
   const [showFilesDisplay, setShowFilesDisplay] = useState<boolean>(false)
 
-  // RETIEVAL STORE
-  const [useRetrieval, setUseRetrieval] = useState<boolean>(true)
-  const [sourceCount, setSourceCount] = useState<number>(4)
+  // RETIEVAL STORE (unused in minimal UI)
+  const [useRetrieval, setUseRetrieval] = useState<boolean>(false)
+  const [sourceCount, setSourceCount] = useState<number>(0)
 
-  // TOOL STORE
+  // TOOL STORE (unused in minimal UI)
   const [selectedTools, setSelectedTools] = useState<Tables<"tools">[]>([])
   const [toolInUse, setToolInUse] = useState<string>("none")
 
   useEffect(() => {
     ;(async () => {
       const profile = await fetchStartingData()
-
-      if (profile) {
-        const hostedModelRes = await fetchHostedModels(profile)
-        if (!hostedModelRes) return
-
-        setEnvKeyMap(hostedModelRes.envKeyMap)
-        setAvailableHostedModels(hostedModelRes.hostedModels)
-
-        if (
-          profile["openrouter_api_key"] ||
-          hostedModelRes.envKeyMap["openrouter"]
-        ) {
-          const openRouterModels = await fetchOpenRouterModels()
-          if (!openRouterModels) return
-          setAvailableOpenRouterModels(openRouterModels)
-        }
-      }
-
-      if (process.env.NEXT_PUBLIC_OLLAMA_URL) {
-        const localModels = await fetchOllamaModels()
-        if (!localModels) return
-        setAvailableLocalModels(localModels)
-      }
+      if (!profile) return
+      // Skip hosted/local/openrouter model fetches in minimal UI
     })()
   }, [])
 
@@ -167,17 +141,14 @@ export const GlobalState: FC<GlobalStateProps> = ({ children }) => {
 
       for (const workspace of workspaces) {
         let workspaceImageUrl = ""
-
         if (workspace.image_path) {
           workspaceImageUrl =
             (await getWorkspaceImageFromStorage(workspace.image_path)) || ""
         }
-
         if (workspaceImageUrl) {
           const response = await fetch(workspaceImageUrl)
           const blob = await response.blob()
           const base64 = await convertBlobToBase64(blob)
-
           setWorkspaceImages(prev => [
             ...prev,
             {
@@ -201,7 +172,7 @@ export const GlobalState: FC<GlobalStateProps> = ({ children }) => {
         profile,
         setProfile,
 
-        // ITEMS STORE
+        // ITEMS STORE (kept but unused)
         assistants,
         setAssistants,
         collections,
@@ -271,7 +242,7 @@ export const GlobalState: FC<GlobalStateProps> = ({ children }) => {
         abortController,
         setAbortController,
 
-        // CHAT INPUT COMMAND STORE
+        // CHAT INPUT COMMAND STORE (unused)
         isPromptPickerOpen,
         setIsPromptPickerOpen,
         slashCommand,
@@ -291,7 +262,7 @@ export const GlobalState: FC<GlobalStateProps> = ({ children }) => {
         isAssistantPickerOpen,
         setIsAssistantPickerOpen,
 
-        // ATTACHMENT STORE
+        // ATTACHMENT STORE (unused)
         chatFiles,
         setChatFiles,
         chatImages,
@@ -303,13 +274,11 @@ export const GlobalState: FC<GlobalStateProps> = ({ children }) => {
         showFilesDisplay,
         setShowFilesDisplay,
 
-        // RETRIEVAL STORE
+        // RETRIEVAL / TOOL STORE (unused)
         useRetrieval,
         setUseRetrieval,
         sourceCount,
         setSourceCount,
-
-        // TOOL STORE
         selectedTools,
         setSelectedTools,
         toolInUse,

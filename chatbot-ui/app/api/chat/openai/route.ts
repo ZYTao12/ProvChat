@@ -1,6 +1,5 @@
 import { checkApiKey, getServerProfile } from "@/lib/server/server-chat-helpers"
 import { ChatSettings } from "@/types"
-import { OpenAIStream, StreamingTextResponse } from "ai"
 import { ServerRuntime } from "next"
 import OpenAI from "openai"
 import { ChatCompletionCreateParamsBase } from "openai/resources/chat/completions.mjs"
@@ -34,13 +33,17 @@ export async function POST(request: Request) {
         chatSettings.model === "chatgpt-4o-latest"
           ? 4096
           : undefined,
-      response_format: { type: "json_object" },
-      stream: true
+      response_format: { type: "json_object" }
     })
 
-    const stream = OpenAIStream(response)
+    const content = response.choices[0].message.content || "{}"
 
-    return new StreamingTextResponse(stream)
+    return new Response(content, {
+      status: 200,
+      headers: {
+        "Content-Type": "application/json"
+      }
+    })
   } catch (error: any) {
     let errorMessage = error.message || "An unexpected error occurred"
     const errorCode = error.status || 500

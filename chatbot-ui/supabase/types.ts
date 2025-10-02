@@ -492,6 +492,36 @@ export type Database = {
           },
         ]
       }
+      experiment_state: {
+        Row: {
+          convo1_completed: boolean
+          convo2_completed: boolean
+          created_at: string
+          post_survey_completed: boolean
+          pre_survey_completed: boolean
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          convo1_completed?: boolean
+          convo2_completed?: boolean
+          created_at?: string
+          post_survey_completed?: boolean
+          pre_survey_completed?: boolean
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          convo1_completed?: boolean
+          convo2_completed?: boolean
+          created_at?: string
+          post_survey_completed?: boolean
+          pre_survey_completed?: boolean
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       file_items: {
         Row: {
           content: string
