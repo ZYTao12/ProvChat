@@ -1,51 +1,51 @@
 -- WORKSPACES
 
 UPDATE workspaces
-SET default_model = 'gpt-4-turbo-preview'
+SET default_model = 'gpt-5-2025-08-07'
 WHERE default_model = 'gpt-4-1106-preview';
 
 UPDATE workspaces
-SET default_model = 'gpt-3.5-turbo'
+SET default_model = 'gpt-5-2025-08-07'
 WHERE default_model = 'gpt-3.5-turbo-1106';
 
 -- PRESETS
 
 UPDATE presets
-SET model = 'gpt-4-turbo-preview'
+SET model = 'gpt-5-2025-08-07'
 WHERE model = 'gpt-4-1106-preview';
 
 UPDATE presets
-SET model = 'gpt-3.5-turbo'
+SET model = 'gpt-5-2025-08-07'
 WHERE model = 'gpt-3.5-turbo-1106';
 
 -- ASSISTANTS
 
 UPDATE assistants
-SET model = 'gpt-4-turbo-preview'
+SET model = 'gpt-5-2025-08-07'
 WHERE model = 'gpt-4-1106-preview';
 
 UPDATE assistants
-SET model = 'gpt-3.5-turbo'
+SET model = 'gpt-5-2025-08-07'
 WHERE model = 'gpt-3.5-turbo-1106';
 
 -- CHATS
 
 UPDATE chats
-SET model = 'gpt-4-turbo-preview'
+SET model = 'gpt-5-2025-08-07'
 WHERE model = 'gpt-4-1106-preview';
 
 UPDATE chats
-SET model = 'gpt-3.5-turbo'
+SET model = 'gpt-5-2025-08-07'
 WHERE model = 'gpt-3.5-turbo-1106';
 
 -- MESSAGES
 
 UPDATE messages
-SET model = 'gpt-4-turbo-preview'
+SET model = 'gpt-5-2025-08-07'
 WHERE model = 'gpt-4-1106-preview';
 
 UPDATE messages
-SET model = 'gpt-3.5-turbo'
+SET model = 'gpt-5-2025-08-07'
 WHERE model = 'gpt-3.5-turbo-1106';
 
 -- PROFILES
@@ -93,9 +93,9 @@ BEGIN
         TRUE,
         'Home',
         4096,
-        'gpt-4-turbo-preview', -- Updated default model
+        'gpt-5-2025-08-07', -- Updated default model
         'You are a friendly, helpful AI assistant.',
-        0.5,
+        1,
         'My home workspace.',
         'openai',
         TRUE,

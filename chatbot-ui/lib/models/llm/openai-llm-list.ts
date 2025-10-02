@@ -110,19 +110,19 @@ const GPT5_2025_08_07: LLM = {
 }
 
 const GPT5Mini_2025_08_07: LLM = {
-  modelId: "gpt-5-mini-2025-08-07",
+  modelId: "gpt-5-2025-08-07",
   modelName: "GPT-5 Mini (2025-08-07)",
   provider: "openai",
-  hostedId: "gpt-5-mini-2025-08-07",
+  hostedId: "gpt-5-2025-08-07",
   platformLink: OPENAI_PLATORM_LINK,
   imageInput: false
 }
 
 const GPT5Nano_2025_08_07: LLM = {
-  modelId: "gpt-5-nano-2025-08-07",
+  modelId: "gpt-5-2025-08-07",
   modelName: "GPT-5 Nano (2025-08-07)",
   provider: "openai",
-  hostedId: "gpt-5-nano-2025-08-07",
+  hostedId: "gpt-5-2025-08-07",
   platformLink: OPENAI_PLATORM_LINK,
   imageInput: false
 }

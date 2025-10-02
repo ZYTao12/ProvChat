@@ -4,9 +4,11 @@ import { Tables } from "@/supabase/types"
 import { FC, useContext, useState } from "react"
 import { Message } from "../messages/message"
 
-interface ChatMessagesProps {}
+interface ChatMessagesProps {
+  renderPlainFromJson?: boolean
+}
 
-export const ChatMessages: FC<ChatMessagesProps> = ({}) => {
+export const ChatMessages: FC<ChatMessagesProps> = ({ renderPlainFromJson = false }) => {
   const { chatMessages, chatFileItems } = useContext(ChatbotUIContext)
 
   const { handleSendEdit } = useChatHandler()
@@ -32,6 +34,7 @@ export const ChatMessages: FC<ChatMessagesProps> = ({}) => {
           onStartEdit={setEditingMessage}
           onCancelEdit={() => setEditingMessage(undefined)}
           onSubmitEdit={handleSendEdit}
+          renderPlainFromJson={renderPlainFromJson}
         />
       )
     })

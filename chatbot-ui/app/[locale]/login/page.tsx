@@ -15,8 +15,10 @@ export const metadata: Metadata = {
 }
 
 export default async function Login({
+  params,
   searchParams
 }: {
+  params: { locale: string }
   searchParams: { message: string }
 }) {
   const cookieStore = cookies()
@@ -31,22 +33,7 @@ export default async function Login({
       }
     }
   )
-  const session = (await supabase.auth.getSession()).data.session
-
-  if (session) {
-    const { data: homeWorkspace, error } = await supabase
-      .from("workspaces")
-      .select("*")
-      .eq("user_id", session.user.id)
-      .eq("is_home", true)
-      .single()
-
-    if (!homeWorkspace) {
-      throw new Error(error.message)
-    }
-
-    return redirect(`/${homeWorkspace.id}/chat`)
-  }
+  // Do not auto-redirect if a session exists; always show login form
 
   const signIn = async (formData: FormData) => {
     "use server"
@@ -78,7 +65,7 @@ export default async function Login({
       )
     }
 
-    return redirect(`/${homeWorkspace.id}/chat`)
+    return redirect(`/${params.locale}/${homeWorkspace.id}/progress`)
   }
 
   const getEnvVarOrEdgeConfigValue = async (name: string) => {

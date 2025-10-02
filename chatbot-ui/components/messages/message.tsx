@@ -34,6 +34,7 @@ interface MessageProps {
   onStartEdit: (message: Tables<"messages">) => void
   onCancelEdit: () => void
   onSubmitEdit: (value: string, sequenceNumber: number) => void
+  renderPlainFromJson?: boolean
 }
 
 export const Message: FC<MessageProps> = ({
@@ -43,7 +44,8 @@ export const Message: FC<MessageProps> = ({
   isLast,
   onStartEdit,
   onCancelEdit,
-  onSubmitEdit
+  onSubmitEdit,
+  renderPlainFromJson = false
 }) => {
   const {
     assistants,
@@ -179,7 +181,6 @@ export const Message: FC<MessageProps> = ({
     return acc
   }, fileAccumulator)
 
-  // Try to render structured JSON output (LabeledSentences) if present
   const renderStructuredOrMarkdown = () => {
     try {
       const data = JSON.parse(message.content)
@@ -191,6 +192,14 @@ export const Message: FC<MessageProps> = ({
 
       if (!isValid) {
         return <MessageMarkdown content={message.content} />
+      }
+
+      if (renderPlainFromJson) {
+        const plain = data.sentences
+          .map((s: any) => (typeof s.message_text === "string" ? s.message_text : ""))
+          .filter((s: string) => s.trim().length > 0)
+          .join(" ")
+        return <p className="mb-2 last:mb-0">{plain}</p>
       }
 
       return (
