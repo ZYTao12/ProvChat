@@ -28,17 +28,19 @@ CREATE TABLE IF NOT EXISTS tools (
 
 -- INDEXES --
 
-CREATE INDEX tools_user_id_idx ON tools(user_id);
+CREATE INDEX IF NOT EXISTS tools_user_id_idx ON tools(user_id);
 
 -- RLS --
 
 ALTER TABLE tools ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Allow full access to own tools" ON tools;
 CREATE POLICY "Allow full access to own tools"
     ON tools
     USING (user_id = auth.uid())
     WITH CHECK (user_id = auth.uid());
 
+DROP POLICY IF EXISTS "Allow view access to non-private tools" ON tools;
 CREATE POLICY "Allow view access to non-private tools"
     ON tools
     FOR SELECT
@@ -46,6 +48,7 @@ CREATE POLICY "Allow view access to non-private tools"
 
 -- TRIGGERS --
 
+DROP TRIGGER IF EXISTS update_tools_updated_at ON tools;
 CREATE TRIGGER update_tools_updated_at
 BEFORE UPDATE ON tools
 FOR EACH ROW
@@ -70,14 +73,15 @@ CREATE TABLE IF NOT EXISTS tool_workspaces (
 
 -- INDEXES --
 
-CREATE INDEX tool_workspaces_user_id_idx ON tool_workspaces(user_id);
-CREATE INDEX tool_workspaces_tool_id_idx ON tool_workspaces(tool_id);
-CREATE INDEX tool_workspaces_workspace_id_idx ON tool_workspaces(workspace_id);
+CREATE INDEX IF NOT EXISTS tool_workspaces_user_id_idx ON tool_workspaces(user_id);
+CREATE INDEX IF NOT EXISTS tool_workspaces_tool_id_idx ON tool_workspaces(tool_id);
+CREATE INDEX IF NOT EXISTS tool_workspaces_workspace_id_idx ON tool_workspaces(workspace_id);
 
 -- RLS --
 
 ALTER TABLE tool_workspaces ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Allow full access to own tool_workspaces" ON tool_workspaces;
 CREATE POLICY "Allow full access to own tool_workspaces"
     ON tool_workspaces
     USING (user_id = auth.uid())
@@ -85,6 +89,7 @@ CREATE POLICY "Allow full access to own tool_workspaces"
 
 -- TRIGGERS --
 
+DROP TRIGGER IF EXISTS update_tool_workspaces_updated_at ON tool_workspaces;
 CREATE TRIGGER update_tool_workspaces_updated_at
 BEFORE UPDATE ON tool_workspaces 
 FOR EACH ROW 

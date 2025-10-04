@@ -1,6 +1,6 @@
 --------------- FILE ITEMS ---------------
 
-create table file_items (
+CREATE TABLE IF NOT EXISTS file_items (
   -- ID
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
 
@@ -24,23 +24,25 @@ create table file_items (
 
 -- INDEXES --
 
-CREATE INDEX file_items_file_id_idx ON file_items(file_id);
+CREATE INDEX IF NOT EXISTS file_items_file_id_idx ON file_items(file_id);
 
-CREATE INDEX file_items_embedding_idx ON file_items
+CREATE INDEX IF NOT EXISTS file_items_embedding_idx ON file_items
   USING hnsw (openai_embedding vector_cosine_ops);
 
-CREATE INDEX file_items_local_embedding_idx ON file_items
+CREATE INDEX IF NOT EXISTS file_items_local_embedding_idx ON file_items
   USING hnsw (local_embedding vector_cosine_ops);
 
 -- RLS
 
 ALTER TABLE file_items ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Allow full access to own file items" ON file_items;
 CREATE POLICY "Allow full access to own file items"
     ON file_items
     USING (user_id = auth.uid())
     WITH CHECK (user_id = auth.uid());
 
+DROP POLICY IF EXISTS "Allow view access to non-private file items" ON file_items;
 CREATE POLICY "Allow view access to non-private file items"
     ON file_items
     FOR SELECT
@@ -50,6 +52,7 @@ CREATE POLICY "Allow view access to non-private file items"
 
 -- TRIGGERS --
 
+DROP TRIGGER IF EXISTS update_profiles_updated_at ON file_items;
 CREATE TRIGGER update_profiles_updated_at
 BEFORE UPDATE ON file_items
 FOR EACH ROW
@@ -57,7 +60,7 @@ EXECUTE PROCEDURE update_updated_at_column();
 
 -- FUNCTIONS --
 
-create function match_file_items_local (
+CREATE OR REPLACE FUNCTION match_file_items_local (
   query_embedding vector(384),
   match_count int DEFAULT null,
   file_ids UUID[] DEFAULT null
@@ -86,7 +89,7 @@ begin
 end;
 $$;
 
-create function match_file_items_openai (
+CREATE OR REPLACE FUNCTION match_file_items_openai (
   query_embedding vector(1536),
   match_count int DEFAULT null,
   file_ids UUID[] DEFAULT null

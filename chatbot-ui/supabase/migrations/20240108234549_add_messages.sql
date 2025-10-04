@@ -27,17 +27,19 @@ CREATE TABLE IF NOT EXISTS messages (
 
 -- INDEXES --
 
-CREATE INDEX idx_messages_chat_id ON messages (chat_id);
+CREATE INDEX IF NOT EXISTS idx_messages_chat_id ON messages (chat_id);
 
 -- RLS --
 
 ALTER TABLE messages ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Allow full access to own messages" ON messages;
 CREATE POLICY "Allow full access to own messages"
     ON messages
     USING (user_id = auth.uid())
     WITH CHECK (user_id = auth.uid());
 
+DROP POLICY IF EXISTS "Allow view access to messages for non-private chats" ON messages;
 CREATE POLICY "Allow view access to messages for non-private chats"
     ON messages
     FOR SELECT
@@ -90,11 +92,13 @@ $$ LANGUAGE plpgsql;
 
 -- TRIGGERS --
 
+DROP TRIGGER IF EXISTS update_messages_updated_at ON messages;
 CREATE TRIGGER update_messages_updated_at
 BEFORE UPDATE ON messages
 FOR EACH ROW
 EXECUTE PROCEDURE update_updated_at_column();
 
+DROP TRIGGER IF EXISTS delete_old_message_images ON messages;
 CREATE TRIGGER delete_old_message_images
 AFTER DELETE ON messages
 FOR EACH ROW
@@ -104,8 +108,10 @@ EXECUTE PROCEDURE delete_old_message_images();
 
 -- MESSAGE IMAGES
 
-INSERT INTO storage.buckets (id, name, public) VALUES ('message_images', 'message_images', false);
+INSERT INTO storage.buckets (id, name, public) VALUES ('message_images', 'message_images', false)
+ON CONFLICT (id) DO NOTHING;
 
+DROP POLICY IF EXISTS "Allow read access to own message images" ON storage.objects;
 CREATE POLICY "Allow read access to own message images"
     ON storage.objects FOR SELECT
     USING (
@@ -123,14 +129,17 @@ CREATE POLICY "Allow read access to own message images"
         )
     );
 
+DROP POLICY IF EXISTS "Allow insert access to own message images" ON storage.objects;
 CREATE POLICY "Allow insert access to own message images"
     ON storage.objects FOR INSERT
     WITH CHECK (bucket_id = 'message_images' AND (storage.foldername(name))[1] = auth.uid()::text);
 
+DROP POLICY IF EXISTS "Allow update access to own message images" ON storage.objects;
 CREATE POLICY "Allow update access to own message images"
     ON storage.objects FOR UPDATE
     USING (bucket_id = 'message_images' AND (storage.foldername(name))[1] = auth.uid()::text);
 
+DROP POLICY IF EXISTS "Allow delete access to own message images" ON storage.objects;
 CREATE POLICY "Allow delete access to own message images"
     ON storage.objects FOR DELETE
     USING (bucket_id = 'message_images' AND (storage.foldername(name))[1] = auth.uid()::text);
@@ -154,12 +163,13 @@ CREATE TABLE IF NOT EXISTS message_file_items (
 
 -- INDEXES --
 
-CREATE INDEX idx_message_file_items_message_id ON message_file_items (message_id);
+CREATE INDEX IF NOT EXISTS idx_message_file_items_message_id ON message_file_items (message_id);
 
 -- RLS --
 
 ALTER TABLE message_file_items ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Allow full access to own message_file_items" ON message_file_items;
 CREATE POLICY "Allow full access to own message_file_items"
     ON message_file_items
     USING (user_id = auth.uid())
@@ -167,6 +177,7 @@ CREATE POLICY "Allow full access to own message_file_items"
 
 -- TRIGGERS --
 
+DROP TRIGGER IF EXISTS update_message_file_items_updated_at ON message_file_items;
 CREATE TRIGGER update_message_file_items_updated_at
 BEFORE UPDATE ON message_file_items 
 FOR EACH ROW 

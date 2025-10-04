@@ -33,17 +33,19 @@ CREATE TABLE IF NOT EXISTS presets (
 
 -- INDEXES --
 
-CREATE INDEX presets_user_id_idx ON presets(user_id);
+CREATE INDEX IF NOT EXISTS presets_user_id_idx ON presets(user_id);
 
 -- RLS --
 
 ALTER TABLE presets ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Allow full access to own presets" ON presets;
 CREATE POLICY "Allow full access to own presets"
     ON presets
     USING (user_id = auth.uid())
     WITH CHECK (user_id = auth.uid());
 
+DROP POLICY IF EXISTS "Allow view access to non-private presets" ON presets;
 CREATE POLICY "Allow view access to non-private presets"
     ON presets
     FOR SELECT
@@ -51,6 +53,7 @@ CREATE POLICY "Allow view access to non-private presets"
 
 -- TRIGGERS --
 
+DROP TRIGGER IF EXISTS update_presets_updated_at ON presets;
 CREATE TRIGGER update_presets_updated_at
 BEFORE UPDATE ON presets 
 FOR EACH ROW 
@@ -75,14 +78,15 @@ CREATE TABLE IF NOT EXISTS preset_workspaces (
 
 -- INDEXES --
 
-CREATE INDEX preset_workspaces_user_id_idx ON preset_workspaces(user_id);
-CREATE INDEX preset_workspaces_preset_id_idx ON preset_workspaces(preset_id);
-CREATE INDEX preset_workspaces_workspace_id_idx ON preset_workspaces(workspace_id);
+CREATE INDEX IF NOT EXISTS preset_workspaces_user_id_idx ON preset_workspaces(user_id);
+CREATE INDEX IF NOT EXISTS preset_workspaces_preset_id_idx ON preset_workspaces(preset_id);
+CREATE INDEX IF NOT EXISTS preset_workspaces_workspace_id_idx ON preset_workspaces(workspace_id);
 
 -- RLS --
 
 ALTER TABLE preset_workspaces ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Allow full access to own preset_workspaces" ON preset_workspaces;
 CREATE POLICY "Allow full access to own preset_workspaces"
     ON preset_workspaces
     USING (user_id = auth.uid())
@@ -90,6 +94,7 @@ CREATE POLICY "Allow full access to own preset_workspaces"
 
 -- TRIGGERS --
 
+DROP TRIGGER IF EXISTS update_preset_workspaces_updated_at ON preset_workspaces;
 CREATE TRIGGER update_preset_workspaces_updated_at
 BEFORE UPDATE ON preset_workspaces 
 FOR EACH ROW 
