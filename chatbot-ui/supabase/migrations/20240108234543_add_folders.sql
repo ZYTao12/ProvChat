@@ -22,13 +22,14 @@ CREATE TABLE IF NOT EXISTS folders (
 
 -- INDEXES --
 
-CREATE INDEX folders_user_id_idx ON folders(user_id);
-CREATE INDEX folders_workspace_id_idx ON folders(workspace_id);
+CREATE INDEX IF NOT EXISTS folders_user_id_idx ON folders(user_id);
+CREATE INDEX IF NOT EXISTS folders_workspace_id_idx ON folders(workspace_id);
 
 -- RLS --
 
 ALTER TABLE folders ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Allow full access to own folders" ON folders;
 CREATE POLICY "Allow full access to own folders"
     ON folders
     USING (user_id = auth.uid())
@@ -36,6 +37,7 @@ CREATE POLICY "Allow full access to own folders"
 
 -- TRIGGERS --
 
+DROP TRIGGER IF EXISTS update_folders_updated_at ON folders;
 CREATE TRIGGER update_folders_updated_at
 BEFORE UPDATE ON folders
 FOR EACH ROW

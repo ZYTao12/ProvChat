@@ -39,12 +39,13 @@ CREATE TABLE IF NOT EXISTS profiles (
 
 -- INDEXES --
 
-CREATE INDEX idx_profiles_user_id ON profiles (user_id);
+CREATE INDEX IF NOT EXISTS idx_profiles_user_id ON profiles (user_id);
 
 -- RLS --
 
 ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Allow full access to own profiles" ON profiles;
 CREATE POLICY "Allow full access to own profiles"
     ON profiles
     USING (user_id = auth.uid())
@@ -79,6 +80,7 @@ $$;
 
 -- TRIGGERS --
 
+DROP TRIGGER IF EXISTS update_profiles_updated_at ON profiles;
 CREATE TRIGGER update_profiles_updated_at
 BEFORE UPDATE ON profiles
 FOR EACH ROW
@@ -117,7 +119,8 @@ BEGIN
         '',
         FALSE,
         random_username
-    );
+    )
+    ON CONFLICT (user_id) DO NOTHING;
 
     -- Create the home workspace for the new user
     INSERT INTO public.workspaces(user_id, is_home, name, default_context_length, default_model, default_prompt, default_temperature, description, embeddings_provider, include_profile_context, include_workspace_instructions, instructions)
@@ -134,17 +137,20 @@ BEGIN
         TRUE,
         TRUE,
         ''
-    );
+    )
+    ON CONFLICT (user_id, is_home) DO NOTHING;
 
     RETURN NEW;
 END;
 $$ language 'plpgsql';
 
+DROP TRIGGER IF EXISTS create_profile_and_workspace_trigger ON auth.users;
 CREATE TRIGGER create_profile_and_workspace_trigger
 AFTER INSERT ON auth.users
 FOR EACH ROW
 EXECUTE PROCEDURE public.create_profile_and_workspace();
 
+DROP TRIGGER IF EXISTS delete_old_profile_image ON profiles;
 CREATE TRIGGER delete_old_profile_image
 AFTER DELETE ON profiles
 FOR EACH ROW
@@ -152,20 +158,25 @@ EXECUTE PROCEDURE delete_old_profile_image();
 
 -- STORAGE --
 
-INSERT INTO storage.buckets (id, name, public) VALUES ('profile_images', 'profile_images', true);
+INSERT INTO storage.buckets (id, name, public) VALUES ('profile_images', 'profile_images', true)
+ON CONFLICT (id) DO NOTHING;
 
+DROP POLICY IF EXISTS "Allow public read access on profile images" ON storage.objects;
 CREATE POLICY "Allow public read access on profile images"
     ON storage.objects FOR SELECT
     USING (bucket_id = 'profile_images');
 
+DROP POLICY IF EXISTS "Allow authenticated insert access to own profile images" ON storage.objects;
 CREATE POLICY "Allow authenticated insert access to own profile images"
     ON storage.objects FOR INSERT TO authenticated
     WITH CHECK (bucket_id = 'profile_images' AND (storage.foldername(name))[1] = auth.uid()::text);
 
+DROP POLICY IF EXISTS "Allow authenticated update access to own profile images" ON storage.objects;
 CREATE POLICY "Allow authenticated update access to own profile images"
     ON storage.objects FOR UPDATE TO authenticated
     USING (bucket_id = 'profile_images' AND (storage.foldername(name))[1] = auth.uid()::text);
 
+DROP POLICY IF EXISTS "Allow authenticated delete access to own profile images" ON storage.objects;
 CREATE POLICY "Allow authenticated delete access to own profile images"
     ON storage.objects FOR DELETE TO authenticated
     USING (bucket_id = 'profile_images' AND (storage.foldername(name))[1] = auth.uid()::text);

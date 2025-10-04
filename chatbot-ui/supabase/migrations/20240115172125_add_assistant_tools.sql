@@ -17,14 +17,15 @@ CREATE TABLE IF NOT EXISTS assistant_tools (
 
 -- INDEXES --
 
-CREATE INDEX assistant_tools_user_id_idx ON assistant_tools(user_id);
-CREATE INDEX assistant_tools_assistant_id_idx ON assistant_tools(assistant_id);
-CREATE INDEX assistant_tools_tool_id_idx ON assistant_tools(tool_id);
+CREATE INDEX IF NOT EXISTS assistant_tools_user_id_idx ON assistant_tools(user_id);
+CREATE INDEX IF NOT EXISTS assistant_tools_assistant_id_idx ON assistant_tools(assistant_id);
+CREATE INDEX IF NOT EXISTS assistant_tools_tool_id_idx ON assistant_tools(tool_id);
 
 -- RLS --
 
 ALTER TABLE assistant_tools ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Allow full access to own assistant_tools" ON assistant_tools;
 CREATE POLICY "Allow full access to own assistant_tools"
     ON assistant_tools
     USING (user_id = auth.uid())
@@ -32,6 +33,7 @@ CREATE POLICY "Allow full access to own assistant_tools"
 
 -- TRIGGERS --
 
+DROP TRIGGER IF EXISTS update_assistant_tools_updated_at ON assistant_tools;
 CREATE TRIGGER update_assistant_tools_updated_at
 BEFORE UPDATE ON assistant_tools 
 FOR EACH ROW 

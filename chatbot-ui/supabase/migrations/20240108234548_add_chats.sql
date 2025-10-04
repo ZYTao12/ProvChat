@@ -34,18 +34,20 @@ CREATE TABLE IF NOT EXISTS chats (
 
 -- INDEXES --
 
-CREATE INDEX idx_chats_user_id ON chats (user_id);
-CREATE INDEX idx_chats_workspace_id ON chats (workspace_id);
+CREATE INDEX IF NOT EXISTS idx_chats_user_id ON chats (user_id);
+CREATE INDEX IF NOT EXISTS idx_chats_workspace_id ON chats (workspace_id);
 
 -- RLS --
 
 ALTER TABLE chats ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Allow full access to own chats" ON chats;
 CREATE POLICY "Allow full access to own chats"
     ON chats
     USING (user_id = auth.uid())
     WITH CHECK (user_id = auth.uid());
 
+DROP POLICY IF EXISTS "Allow view access to non-private chats" ON chats;
 CREATE POLICY "Allow view access to non-private chats"
     ON chats
     FOR SELECT
@@ -53,6 +55,7 @@ CREATE POLICY "Allow view access to non-private chats"
 
 -- TRIGGERS --
 
+DROP TRIGGER IF EXISTS update_chats_updated_at ON chats;
 CREATE TRIGGER update_chats_updated_at
 BEFORE UPDATE ON chats 
 FOR EACH ROW 
@@ -77,12 +80,13 @@ CREATE TABLE IF NOT EXISTS chat_files (
 
 -- INDEXES --
 
-CREATE INDEX idx_chat_files_chat_id ON chat_files (chat_id);
+CREATE INDEX IF NOT EXISTS idx_chat_files_chat_id ON chat_files (chat_id);
 
 -- RLS --
 
 ALTER TABLE chat_files ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Allow full access to own chat_files" ON chat_files;
 CREATE POLICY "Allow full access to own chat_files"
     ON chat_files
     USING (user_id = auth.uid())
@@ -90,6 +94,7 @@ CREATE POLICY "Allow full access to own chat_files"
 
 -- TRIGGERS --
 
+DROP TRIGGER IF EXISTS update_chat_files_updated_at ON chat_files;
 CREATE TRIGGER update_chat_files_updated_at
 BEFORE UPDATE ON chat_files 
 FOR EACH ROW 

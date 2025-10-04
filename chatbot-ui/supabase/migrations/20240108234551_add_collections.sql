@@ -26,17 +26,19 @@ CREATE TABLE IF NOT EXISTS collections (
 
 -- INDEXES --
 
-CREATE INDEX collections_user_id_idx ON collections(user_id);
+CREATE INDEX IF NOT EXISTS collections_user_id_idx ON collections(user_id);
 
 -- RLS --
 
 ALTER TABLE collections ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Allow full access to own collections" ON collections;
 CREATE POLICY "Allow full access to own collections"
     ON collections
     USING (user_id = auth.uid())
     WITH CHECK (user_id = auth.uid());
 
+DROP POLICY IF EXISTS "Allow view access to non-private collections" ON collections;
 CREATE POLICY "Allow view access to non-private collections"
     ON collections
     FOR SELECT
@@ -44,6 +46,7 @@ CREATE POLICY "Allow view access to non-private collections"
 
 -- TRIGGERS --
 
+DROP TRIGGER IF EXISTS update_collections_updated_at ON collections;
 CREATE TRIGGER update_collections_updated_at
 BEFORE UPDATE ON collections
 FOR EACH ROW
@@ -68,14 +71,15 @@ CREATE TABLE IF NOT EXISTS collection_workspaces (
 
 -- INDEXES --
 
-CREATE INDEX collection_workspaces_user_id_idx ON collection_workspaces(user_id);
-CREATE INDEX collection_workspaces_collection_id_idx ON collection_workspaces(collection_id);
-CREATE INDEX collection_workspaces_workspace_id_idx ON collection_workspaces(workspace_id);
+CREATE INDEX IF NOT EXISTS collection_workspaces_user_id_idx ON collection_workspaces(user_id);
+CREATE INDEX IF NOT EXISTS collection_workspaces_collection_id_idx ON collection_workspaces(collection_id);
+CREATE INDEX IF NOT EXISTS collection_workspaces_workspace_id_idx ON collection_workspaces(workspace_id);
 
 -- RLS --
 
 ALTER TABLE collection_workspaces ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Allow full access to own collection_workspaces" ON collection_workspaces;
 CREATE POLICY "Allow full access to own collection_workspaces"
     ON collection_workspaces
     USING (user_id = auth.uid())
@@ -83,6 +87,7 @@ CREATE POLICY "Allow full access to own collection_workspaces"
 
 -- TRIGGERS --
 
+DROP TRIGGER IF EXISTS update_collection_workspaces_updated_at ON collection_workspaces;
 CREATE TRIGGER update_collection_workspaces_updated_at
 BEFORE UPDATE ON collection_workspaces 
 FOR EACH ROW 
@@ -107,13 +112,14 @@ CREATE TABLE IF NOT EXISTS collection_files (
 
 -- INDEXES --
 
-CREATE INDEX idx_collection_files_collection_id ON collection_files (collection_id);
-CREATE INDEX idx_collection_files_file_id ON collection_files (file_id);
+CREATE INDEX IF NOT EXISTS idx_collection_files_collection_id ON collection_files (collection_id);
+CREATE INDEX IF NOT EXISTS idx_collection_files_file_id ON collection_files (file_id);
 
 -- RLS --
 
 ALTER TABLE collection_files ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Allow full access to own collection_files" ON collection_files;
 CREATE POLICY "Allow full access to own collection_files"
     ON collection_files
     USING (user_id = auth.uid())
@@ -128,6 +134,7 @@ CREATE POLICY "Allow view access to collection files for non-private collections
 
 -- TRIGGERS --
 
+DROP TRIGGER IF EXISTS update_collection_files_updated_at ON collection_files;
 CREATE TRIGGER update_collection_files_updated_at
 BEFORE UPDATE ON collection_files 
 FOR EACH ROW 
@@ -135,6 +142,7 @@ EXECUTE PROCEDURE update_updated_at_column();
 
 --------------- REFERS BACK TO FILES ---------------
 
+DROP POLICY IF EXISTS "Allow view access to files for non-private collections" ON files;
 CREATE POLICY "Allow view access to files for non-private collections"
     ON files
     FOR SELECT
